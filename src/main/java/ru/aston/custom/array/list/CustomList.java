@@ -1,4 +1,4 @@
-package ru.aston;
+package ru.aston.custom.array.list;
 
 import java.util.Collection;
 import java.util.Comparator;

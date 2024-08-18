@@ -1,17 +1,19 @@
-package ru.aston;
+package ru.aston.custom.array.list;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.aston.sorting.Sorting;
 
 import java.util.*;
 
 @Component
-public final class CustomArrayList<E> implements CustomList<E>, Iterable<E> {
+public class CustomArrayList<E> implements CustomList<E>, Iterable<E> {
     private static final int DEFAULT_SIZE = 10;
     private final Sorting<E> sorting;
     private Object[] elementData;
     private int size = 0;
 
+    @Autowired
     public CustomArrayList(Sorting<E> sorting) {
         this.sorting = sorting;
         this.elementData = new Object[DEFAULT_SIZE];
@@ -115,7 +117,7 @@ public final class CustomArrayList<E> implements CustomList<E>, Iterable<E> {
         try {
             elementData = sorting.sort(elementData, comparator);
         } catch (ClassCastException e) {
-            throw new RuntimeException("Cannot sort list with mixed types: " + e.getMessage());
+            throw new IllegalArgumentException("Cannot sort list with mixed types: " + e.getMessage());
         }
     }
 

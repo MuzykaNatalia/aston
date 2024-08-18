@@ -1,7 +1,7 @@
-package ru.aston;
+package ru.aston.sorting;
 
 import java.util.Comparator;
 
 public interface Sorting<E> {
-    Object[] sort(Comparator<? super E> c);
+    Object[] sort(Object[] elementData, Comparator<? super E> c);
 }
