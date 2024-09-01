@@ -58,10 +58,6 @@ public class CustomUserJdbcTemplate {
         }
     }
 
-    public int delete(String sql, List<Object> params) {
-        return update(sql, params);
-    }
-
     private void setParameters(PreparedStatement stmt, List<Object> params) throws SQLException {
         for (int i = 0; i < params.size(); i++) {
                 stmt.setObject(i + 1, params.get(i));

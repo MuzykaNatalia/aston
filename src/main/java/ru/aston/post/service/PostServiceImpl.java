@@ -23,14 +23,22 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Collection<ResponsePostDto> getAllPostsUser(long userId) {
-        userRepository.getUserById(userId);
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("User ID " + userId + " not found");
+        }
+
         Collection<Post> posts = postRepository.getAllPostsUser(userId);
         return postMapper.toResponsePostDto(posts);
     }
 
     @Override
     public ResponsePostDto getPostById(long postId, long userId) {
-        userRepository.getUserById(userId);
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("User ID " + userId + " not found");
+        }
+
         Post post = postRepository.getPostById(postId);
         return postMapper.toResponsePostDto(post);
     }

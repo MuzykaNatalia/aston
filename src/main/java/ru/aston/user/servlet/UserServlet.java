@@ -3,7 +3,6 @@ package ru.aston.user.servlet;
 import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import ru.aston.common.AbstractServlet;
 import ru.aston.user.dto.RequestUserDto;
 import ru.aston.user.dto.ResponseUserDto;

@@ -2,6 +2,7 @@ package ru.aston.user.repository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -71,10 +72,44 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public int deleteUser(Long id) {
-        String sql = "DELETE FROM users WHERE user_id = ?";
-        List<Object> params = Collections.singletonList(id);
-        return customUserJdbcTemplate.delete(sql, params);
+    public int deleteUser(long userId) {
+        int deletedPosts = 0;
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            String query = "SELECT p.post_id, COUNT(DISTINCT pu.user_id) AS author_count " +
+                    "FROM post p " +
+                    "JOIN post_user pu ON p.post_id = pu.post_id " +
+                    "WHERE p.post_id IN (SELECT post_id FROM post_user WHERE user_id = ?) " +
+                    "GROUP BY p.post_id";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setLong(1, userId);
+                ResultSet resultSet = statement.executeQuery();
+
+                while (resultSet.next()) {
+                    long postId = resultSet.getLong("post_id");
+                    int authorCount = resultSet.getInt("author_count");
+
+                    if (authorCount == 1) {
+                        String deletePostQuery = "DELETE FROM post WHERE post_id = ?";
+                        try (PreparedStatement deletePostStatement = connection.prepareStatement(deletePostQuery)) {
+                            deletePostStatement.setLong(1, postId);
+                            deletedPosts += deletePostStatement.executeUpdate();
+                        }
+                    }
+                }
+            }
+
+            String deleteUserQuery = "DELETE FROM users WHERE user_id = ?";
+            try (PreparedStatement deleteUserStatement = connection.prepareStatement(deleteUserQuery)) {
+                deleteUserStatement.setLong(1, userId);
+                deleteUserStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return deletedPosts;
     }
 
     @Override

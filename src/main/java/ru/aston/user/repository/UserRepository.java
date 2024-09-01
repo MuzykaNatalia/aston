@@ -14,7 +14,7 @@ public interface UserRepository {
 
     User updateUser(User user);
 
-    int deleteUser(Long idUser);
+    int deleteUser(long idUser);
 
     List<User> findUsersByIds(Set<Long> userIds);
 }
