@@ -21,19 +21,16 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminDto getAdminById(long adminId) {
-        validateId(adminId);
         Admin admin = adminRepository.getAdminById(adminId);
+        if (admin == null) {
+            throw new RuntimeException("Admin not found");
+        }
+
         return adminMapper.toAdminDto(admin);
     }
 
     @Override
     public AdminDto createAdmin(AdminDto admin) {
-        if (admin.getName() == null || admin.getEmail() == null) {
-            throw new IllegalArgumentException("Name, email cannot be null or empty");
-        }
-        if (admin.getAdminLevel() <= 0) {
-            throw new IllegalArgumentException("Admin level cannot be null");
-        }
         validate(admin);
         Admin createdAdmin = adminRepository.createAdmin(adminMapper.toAdminForCreate(admin));
         return adminMapper.toAdminDto(createdAdmin);
@@ -41,45 +38,34 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminDto updateAdmin(long adminId, AdminDto admin) {
-        validateId(adminId);
         validate(admin);
-
-        Admin existingAdmin = adminRepository.getAdminById(adminId);
-        if (admin.getName() != null) {
-            existingAdmin.setName(admin.getName());
+        Admin updatedAdmin = adminRepository.updateAdmin(adminMapper.toAdminForUpdate(admin, adminId));
+        if (updatedAdmin == null) {
+            throw new RuntimeException("Admin not found");
         }
-        if (admin.getEmail() != null) {
-            existingAdmin.setEmail(admin.getEmail());
-        }
-        if (admin.getAdminLevel() > 0) {
-            existingAdmin.setAdminLevel(admin.getAdminLevel());
-        }
-
-        Admin updatedAdmin = adminRepository.updateAdmin(existingAdmin);
         return adminMapper.toAdminDto(updatedAdmin);
     }
 
     @Override
     public void deleteAdmin(long adminId) {
-        validateId(adminId);
         adminRepository.deleteAdmin(adminId);
     }
 
     private void validate(AdminDto admin) {
-        if (admin.getName() != null && admin.getName().trim().isEmpty()) {
+        if (admin == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        if (admin.getName() == null || (admin.getName() != null && admin.getName().isBlank())) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
-        if (admin.getEmail() != null && admin.getEmail().trim().isEmpty()) {
+        if (admin.getEmail() == null || (admin.getEmail() != null && admin.getEmail().isBlank())) {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
         if (admin.getEmail() != null && !admin.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new IllegalArgumentException("Email is not valid");
         }
-    }
-
-    private void validateId(long adminId) {
-        if (adminId <= 0) {
-            throw new IllegalArgumentException("Admin ID must be greater than zero");
+        if (admin.getAdminLevel() <= 0) {
+            throw new IllegalArgumentException("Admin level cannot be null");
         }
     }
 }

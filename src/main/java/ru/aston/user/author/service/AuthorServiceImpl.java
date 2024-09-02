@@ -16,66 +16,54 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public ResponseAuthorDto getUserById(long userId) {
-        validateId(userId);
-        Author user = authorRepository.getUserById(userId);
-        return authorMapper.toUserDto(user);
-    }
-
-    @Override
-    public Collection<ResponseAuthorDto> getAllUsers() {
-        return authorMapper.toCollectionUserDto(authorRepository.getAllUsers());
-    }
-
-    @Override
-    public ResponseAuthorDto createUser(RequestAuthorDto user) {
-        if (user.getName() == null || user.getEmail() == null) {
-            throw new IllegalArgumentException("Name, email cannot be null or empty");
-        }
-        validateNameAndEmail(user);
-        Author createdUser = authorRepository.createUser(authorMapper.toUserForCreate(user));
-        return authorMapper.toUserDto(createdUser);
-    }
-
-    @Override
-    public ResponseAuthorDto updateUser(long userId, RequestAuthorDto user) {
-        validateId(userId);
-        validateNameAndEmail(user);
-
-        Author existingUser = authorRepository.getUserById(userId);
-        if (user.getName() != null) {
-            existingUser.setName(user.getName());
+    public ResponseAuthorDto getAuthorById(long authorId) {
+        Author author = authorRepository.getAuthorById(authorId);
+        if (author == null) {
+            throw new RuntimeException("Author not found");
         }
 
-        if (user.getEmail() != null) {
-            existingUser.setEmail(user.getEmail());
-        }
-
-        Author updatedUser = authorRepository.updateUser(existingUser);
-        return authorMapper.toUserDto(updatedUser);
+        return authorMapper.toAuthorDto(author);
     }
 
     @Override
-    public void deleteUser(long userId) {
-        validateId(userId);
-        authorRepository.deleteUser(userId);
+    public Collection<ResponseAuthorDto> getAllAuthors() {
+        return authorMapper.toCollectionAuthorDto(authorRepository.getAllAuthors());
     }
 
-    private void validateNameAndEmail(RequestAuthorDto user) {
-        if (user.getName() != null && user.getName().trim().isEmpty()) {
+    @Override
+    public ResponseAuthorDto createAuthor(RequestAuthorDto author) {
+        validateNameAndEmail(author);
+        Author createdAuthor = authorRepository.createAuthor(authorMapper.toAuthorForCreate(author));
+        return authorMapper.toAuthorDto(createdAuthor);
+    }
+
+    @Override
+    public ResponseAuthorDto updateAuthor(long userId, RequestAuthorDto author) {
+        validateNameAndEmail(author);
+        Author updatedAuthor = authorRepository.updateAuthor(authorMapper.toAuthorForUpdate(author, userId));
+        if (updatedAuthor == null) {
+            throw new RuntimeException("User not found");
+        }
+        return authorMapper.toAuthorDto(updatedAuthor);
+    }
+
+    @Override
+    public void deleteAuthor(long userId) {
+        authorRepository.deleteAuthor(userId);
+    }
+
+    private void validateNameAndEmail(RequestAuthorDto author) {
+        if (author == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        if (author.getName() == null || (author.getName() != null && author.getName().isBlank())) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
-        if (user.getEmail() != null && user.getEmail().trim().isEmpty()) {
+        if (author.getEmail() == null || (author.getEmail() != null && author.getEmail().isBlank())) {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
-        if (user.getEmail() != null && !user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+        if (author.getEmail() != null && !author.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             throw new IllegalArgumentException("Email is not valid");
-        }
-    }
-
-    private void validateId(long userId) {
-        if (userId <= 0) {
-            throw new IllegalArgumentException("User ID must be greater than zero");
         }
     }
 }

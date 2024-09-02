@@ -1,7 +1,6 @@
 package ru.aston.user.author.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
@@ -20,7 +19,7 @@ import ru.aston.user.parent.entity.User;
 @Getter
 @Setter
 public class Author extends User {
-    @ManyToMany(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonBackReference
     private Set<Post> posts;

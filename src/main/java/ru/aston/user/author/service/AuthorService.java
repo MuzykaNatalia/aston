@@ -5,13 +5,13 @@ import ru.aston.user.author.dto.ResponseAuthorDto;
 import java.util.Collection;
 
 public interface AuthorService {
-    ResponseAuthorDto getUserById(long userId);
+    ResponseAuthorDto getAuthorById(long userId);
 
-    Collection<ResponseAuthorDto> getAllUsers();
+    Collection<ResponseAuthorDto> getAllAuthors();
 
-    ResponseAuthorDto createUser(RequestAuthorDto user);
+    ResponseAuthorDto createAuthor(RequestAuthorDto user);
 
-    ResponseAuthorDto updateUser(long userId, RequestAuthorDto user);
+    ResponseAuthorDto updateAuthor(long userId, RequestAuthorDto user);
 
-    void deleteUser(long userId);
+    void deleteAuthor(long userId);
 }

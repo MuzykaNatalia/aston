@@ -1,11 +1,13 @@
 package ru.aston.user.author.repository;
 
-import jakarta.persistence.Query;
 import java.util.Collection;
+import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import ru.aston.common.AbstractRepository;
+import ru.aston.post.entity.Post;
 import ru.aston.user.author.entity.Author;
+import ru.aston.user.author.model.PostAuthorCount;
 import ru.aston.utils.HibernateUtil;
 
 public class AuthorRepositoryImpl extends AbstractRepository<Author, Long> implements AuthorRepository {
@@ -14,43 +16,70 @@ public class AuthorRepositoryImpl extends AbstractRepository<Author, Long> imple
     }
 
     @Override
-    public Author getUserById(long userId) {
+    public Author getAuthorById(long userId) {
         return super.getById(userId);
     }
 
     @Override
-    public Collection<Author> getAllUsers() {
+    public Collection<Author> getAllAuthors() {
         return super.getAll();
     }
 
     @Override
-    public Author createUser(Author user) {
+    public Author createAuthor(Author user) {
         return super.save(user);
     }
 
     @Override
-    public Author updateUser(Author user) {
+    public Author updateAuthor(Author user) {
         return super.update(user);
     }
 
     @Override
-    public void deleteUser(Long userId) {
+    public void deleteAuthor(Long userId) {
+        Transaction transaction = null;
+
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
+            transaction = session.beginTransaction();
 
-            String sql = "DELETE FROM user_post WHERE user_id = :userId";
-            Query query = session.createNativeQuery(sql, Author.class);
-            query.setParameter("userId", userId);
-            query.executeUpdate();
-
-            Author user = session.get(Author.class, userId);
-            if (user != null) {
-                session.remove(user);
+            Author author = session.get(Author.class, userId);
+            if (author == null) {
+                return;
             }
+
+            String postAuthorCountQuery = "SELECT new ru.aston.user.author.model.PostAuthorCount(p.id, COUNT(DISTINCT a.id)) " +
+                    "FROM Post p " +
+                    "JOIN p.users a " +
+                    "WHERE p.id IN (SELECT p2.id FROM Post p2 JOIN p2.users u WHERE u.id = :userId) " +
+                    "GROUP BY p.id";
+
+            List<PostAuthorCount> results = session.createQuery(postAuthorCountQuery, PostAuthorCount.class)
+                    .setParameter("userId", userId)
+                    .getResultList();
+
+            for (PostAuthorCount result : results) {
+                Long postId = result.getPostId();
+                Long authorCount = result.getAuthorCount();
+
+                Post post = session.get(Post.class, postId);
+                if (post != null) {
+                    post.getUsers().remove(author);
+
+                    if (authorCount == 1) {
+                        session.remove(post);
+                    }
+                }
+            }
+            session.flush();
+            session.remove(author);
+
             transaction.commit();
         } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
             e.printStackTrace();
-            throw new RuntimeException("Error deleting user", e);
+            throw new RuntimeException("Error deleting author", e);
         }
     }
 }

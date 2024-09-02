@@ -33,4 +33,14 @@
         <servlet-name>AdminServlet</servlet-name>
         <url-pattern>/admins/*</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CommentServlet</servlet-name>
+        <servlet-class>ru.aston.comment.servlet.CommentServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CommentServlet</servlet-name>
+        <url-pattern>/comments/*</url-pattern>
+    </servlet-mapping>
 </web-app>

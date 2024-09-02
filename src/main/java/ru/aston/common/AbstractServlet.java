@@ -54,13 +54,6 @@ public class AbstractServlet extends HttpServlet {
         }
     }
 
-    protected void getExceptionIfHeaderEmpty(String headerId, HttpServletResponse resp) {
-        if (headerId == null || headerId.isEmpty()) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            sendJsonResponse(resp, "The header must not be empty");
-        }
-    }
-
     protected <T> T readJsonRequest(HttpServletRequest req, Class<T> clazz) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(req.getInputStream()))) {
             StringBuilder json = new StringBuilder();
@@ -76,7 +69,8 @@ public class AbstractServlet extends HttpServlet {
         }
     }
 
-    protected void sendJsonResponse(HttpServletResponse resp, Object data) {
+    protected void sendJsonResponse(HttpServletResponse resp, int status, Object data) {
+        resp.setStatus(status);
         resp.setContentType("application/json");
         try (PrintWriter writer = resp.getWriter()) {
             writer.print(objectMapper.writeValueAsString(data));
@@ -84,6 +78,32 @@ public class AbstractServlet extends HttpServlet {
             throw new RuntimeException("Error writing JSON response", e);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected long parseId(String id, HttpServletResponse resp) {
+        if (id == null || id.isBlank()) {
+            sendJsonResponse(resp, HttpServletResponse.SC_BAD_REQUEST, "ID cannot be null or empty");
+            return -1;
+        }
+
+        try {
+            return Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            sendJsonResponse(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid ID format");
+            return -1;
+        }
+    }
+
+    protected void getExceptionIfHeaderEmpty(String headerId, HttpServletResponse resp) {
+        if (headerId == null || headerId.isEmpty()) {
+            throw new IllegalArgumentException("The header must not be empty");
+        }
+    }
+
+    protected void getExceptionIfPathEmpty(String pathInfo) {
+        if (pathInfo == null || pathInfo.equals("/")) {
+            throw new IllegalArgumentException("Invalid request path");
         }
     }
 }

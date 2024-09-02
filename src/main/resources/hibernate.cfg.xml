@@ -16,5 +16,6 @@
         <mapping class="ru.aston.user.author.entity.Author"/>
         <mapping class="ru.aston.user.admin.entity.Admin"/>
         <mapping class="ru.aston.post.entity.Post"/>
+        <mapping class="ru.aston.comment.entity.Comment"/>
     </session-factory>
 </hibernate-configuration>

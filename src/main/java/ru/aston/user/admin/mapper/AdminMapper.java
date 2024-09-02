@@ -25,4 +25,13 @@ public class AdminMapper {
         admin.setAdminLevel(adminDto.getAdminLevel());
         return admin;
     }
+
+    public Admin toAdminForUpdate(AdminDto adminDto, long adminId) {
+        Admin admin = new Admin();
+        admin.setId(adminId);
+        admin.setName(adminDto.getName());
+        admin.setEmail(adminDto.getEmail());
+        admin.setAdminLevel(adminDto.getAdminLevel());
+        return admin;
+    }
 }

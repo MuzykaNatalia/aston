@@ -6,32 +6,39 @@ import java.util.stream.Collectors;
 import ru.aston.user.author.dto.RequestAuthorDto;
 import ru.aston.user.author.dto.ResponseAuthorDto;
 import ru.aston.user.author.entity.Author;
-import ru.aston.user.parent.entity.User;
 
 public class AuthorMapper {
-    public ResponseAuthorDto toUserDto(User user) {
+    public ResponseAuthorDto toAuthorDto(Author author) {
         return ResponseAuthorDto.builder()
-                .name(user.getName())
-                .email(user.getEmail())
+                .name(author.getName())
+                .email(author.getEmail())
                 .build();
     }
 
-    public Author toUserForCreate(RequestAuthorDto user) {
+    public Author toAuthorForCreate(RequestAuthorDto requestAuthorDto) {
         Author author = new Author();
-        author.setName(user.getName());
-        author.setEmail(user.getEmail());
+        author.setName(requestAuthorDto.getName());
+        author.setEmail(requestAuthorDto.getEmail());
         return author;
     }
 
-    public Collection<ResponseAuthorDto> toCollectionUserDto(Collection<Author> users) {
-        return users.stream()
-                .map(this::toUserDto)
+    public Author toAuthorForUpdate(RequestAuthorDto requestAuthorDto, long authorId) {
+        Author author = new Author();
+        author.setId(authorId);
+        author.setName(requestAuthorDto.getName());
+        author.setEmail(requestAuthorDto.getEmail());
+        return author;
+    }
+
+    public Collection<ResponseAuthorDto> toCollectionAuthorDto(Collection<Author> authors) {
+        return authors.stream()
+                .map(this::toAuthorDto)
                 .collect(Collectors.toSet());
     }
 
-    public Set<ResponseAuthorDto> toSetUserDto(Set<Author> users) {
-        return users.stream()
-                .map(this::toUserDto)
+    public Set<ResponseAuthorDto> toSetUserDto(Set<Author> authors) {
+        return authors.stream()
+                .map(this::toAuthorDto)
                 .collect(Collectors.toSet());
     }
 }
