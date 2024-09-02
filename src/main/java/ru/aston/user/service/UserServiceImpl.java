@@ -31,9 +31,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseUserDto createUser(RequestUserDto user) {
-        if (user.getName() == null || user.getEmail() == null) {
-            throw new IllegalArgumentException("Name or email cannot be null or empty");
-        }
         validate(user);
         User createdUser = userRepository.createUser(userMapper.toUserForCreate(user));
         return userMapper.toUserDto(createdUser);
@@ -58,10 +55,13 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validate(RequestUserDto user) {
-        if (user.getName() != null && user.getName().trim().isEmpty()) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null or empty");
+        }
+        if (user.getName() == null || (user.getName() != null && user.getName().isBlank())) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
-        if (user.getEmail() != null && user.getEmail().trim().isEmpty()) {
+        if (user.getEmail() == null || (user.getEmail() != null && user.getEmail().isBlank())) {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
         if (user.getEmail() != null && !user.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
