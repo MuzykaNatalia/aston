@@ -2,9 +2,11 @@ package ru.aston.user.admin.mapper;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 import ru.aston.user.admin.dto.AdminDto;
 import ru.aston.user.admin.entity.Admin;
 
+@Component
 public class AdminMapper {
     public Collection<AdminDto> toCollectionAdminDto(Collection<Admin> allAdmin) {
         return allAdmin.stream().map(this::toAdminDto).collect(Collectors.toList());

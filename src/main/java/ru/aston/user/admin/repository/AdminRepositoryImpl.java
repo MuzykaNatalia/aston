@@ -1,36 +1,49 @@
 package ru.aston.user.admin.repository;
 
 import java.util.Collection;
-import ru.aston.common.AbstractRepository;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import ru.aston.user.admin.entity.Admin;
 
-public class AdminRepositoryImpl extends AbstractRepository<Admin, Long> implements AdminRepository {
-    public AdminRepositoryImpl() {
-        super(Admin.class);
-    }
+@Repository
+public class AdminRepositoryImpl implements AdminRepository {
+    @PersistenceContext
+    protected EntityManager entityManager;
 
     @Override
-    public Collection<Admin> getAllAdmin() {
-        return super.getAll();
+    public Collection<Admin> getAllAdmin(Pageable pageable) {
+        TypedQuery<Admin> query = entityManager.createQuery("FROM Admin", Admin.class);
+
+        query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        query.setMaxResults(pageable.getPageSize());
+
+        return query.getResultList();
     }
 
     @Override
     public Admin getAdminById(long adminId) {
-        return super.getById(adminId);
+        return entityManager.find(Admin.class, adminId);
     }
 
     @Override
     public Admin createAdmin(Admin admin) {
-        return super.save(admin);
+        entityManager.persist(admin);
+        return admin;
     }
 
     @Override
     public void deleteAdmin(long adminId) {
-        super.delete(adminId);
+        Admin admin = entityManager.find(Admin.class, adminId);
+        if (admin != null) {
+            entityManager.remove(admin);
+        }
     }
 
     @Override
     public Admin updateAdmin(Admin admin) {
-        return super.update(admin);
+        return entityManager.merge(admin);
     }
 }

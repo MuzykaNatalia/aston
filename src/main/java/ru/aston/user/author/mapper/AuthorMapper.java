@@ -3,10 +3,12 @@ package ru.aston.user.author.mapper;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 import ru.aston.user.author.dto.RequestAuthorDto;
 import ru.aston.user.author.dto.ResponseAuthorDto;
 import ru.aston.user.author.entity.Author;
 
+@Component
 public class AuthorMapper {
     public ResponseAuthorDto toAuthorDto(Author author) {
         return ResponseAuthorDto.builder()

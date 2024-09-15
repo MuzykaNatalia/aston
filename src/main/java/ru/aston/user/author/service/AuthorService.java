@@ -7,7 +7,7 @@ import java.util.Collection;
 public interface AuthorService {
     ResponseAuthorDto getAuthorById(long userId);
 
-    Collection<ResponseAuthorDto> getAllAuthors();
+    Collection<ResponseAuthorDto> getAllAuthors(int from, int size);
 
     ResponseAuthorDto createAuthor(RequestAuthorDto user);
 

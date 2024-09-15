@@ -1,16 +1,17 @@
 package ru.aston.user.author.repository;
 
 import java.util.Collection;
+import org.springframework.data.domain.Pageable;
 import ru.aston.user.author.entity.Author;
 
 public interface AuthorRepository {
-    Author getAuthorById(long id);
+    Author getAuthorById(long authorId);
 
-    Collection<Author> getAllAuthors();
+    Collection<Author> getAllAuthors(Pageable pageable);
 
-    Author createAuthor(Author user);
+    Author createAuthor(Author author);
 
-    Author updateAuthor(Author user);
+    Author updateAuthor(Author author);
 
-    void deleteAuthor(Long idUser);
+    void deleteAuthor(long authorId);
 }

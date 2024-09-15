@@ -1,65 +1,43 @@
 package ru.aston.post.repository;
 
 import java.util.Collection;
-import java.util.Collections;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
-import ru.aston.common.AbstractRepository;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
 import ru.aston.post.entity.Post;
-import ru.aston.utils.HibernateUtil;
 
-public class PostRepositoryImpl extends AbstractRepository<Post, Long> implements PostRepository {
-    public PostRepositoryImpl() {
-        super(Post.class);
-    }
+@Repository
+public class PostRepositoryImpl implements PostRepository {
+    @PersistenceContext
+    protected EntityManager entityManager;
 
     @Override
     public Collection<Post> getAllPostsAuthor(long userId) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT p FROM Post p JOIN p.users u WHERE u.id = :userId";
-            Query<Post> query = session.createQuery(hql, Post.class);
-            query.setParameter("userId", userId);
-            return query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
+        String hql = "SELECT p FROM Post p JOIN p.users u WHERE u.id = :userId";
+        TypedQuery<Post> query = entityManager.createQuery(hql, Post.class);
+        query.setParameter("userId", userId);
+        return query.getResultList();
     }
 
     @Override
     public Post getPostById(long postId) {
-        return super.getById(postId);
+        return entityManager.find(Post.class, postId);
     }
 
     @Override
     public Post createPost(Post post) {
-        return super.save(post);
+        entityManager.persist(post);
+        return post;
     }
 
     @Override
     public Post updatePost(Post post) {
-        return super.update(post);
+        return entityManager.merge(post);
     }
 
     @Override
-    public void deletePost(long postId) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-
-            String sql = "DELETE FROM user_post WHERE post_id = :postId";
-            jakarta.persistence.Query query = session.createNativeQuery(sql, Post.class);
-            query.setParameter("postId", postId);
-            query.executeUpdate();
-
-            Post post = session.get(Post.class, postId);
-            if (post != null) {
-                session.remove(post);
-            }
-            transaction.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error deleting post", e);
-        }
+    public void deletePost(Post post) {
+        entityManager.remove(post);
     }
 }

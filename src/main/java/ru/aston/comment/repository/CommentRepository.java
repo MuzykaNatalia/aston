@@ -4,7 +4,7 @@ import java.util.Collection;
 import ru.aston.comment.entity.Comment;
 
 public interface CommentRepository {
-    void delete(long commentId);
+    void delete(Comment comment);
 
     Comment findById(long commentId);
 

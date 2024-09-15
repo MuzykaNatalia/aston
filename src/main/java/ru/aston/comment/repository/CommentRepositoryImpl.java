@@ -1,54 +1,38 @@
 package ru.aston.comment.repository;
 
 import java.util.Collection;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
 import ru.aston.comment.entity.Comment;
-import ru.aston.common.AbstractRepository;
-import ru.aston.utils.HibernateUtil;
 
-public class CommentRepositoryImpl extends AbstractRepository<Comment, Long> implements CommentRepository {
-    public CommentRepositoryImpl() {
-        super(Comment.class);
-    }
+@Repository
+public class CommentRepositoryImpl implements CommentRepository {
+    @PersistenceContext
+    protected EntityManager entityManager;
 
     public Collection<Comment> findCommentsByPostId(long postId) {
-        Transaction transaction = null;
-        Collection<Comment> comments = null;
-
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-
-            Query<Comment> query = session.createQuery("FROM Comment c WHERE c.post.id = :postId", Comment.class);
-            query.setParameter("postId", postId);
-
-            comments = query.list();
-
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
-
-        return comments;
+        String hql = "SELECT c FROM Comment c WHERE c.post.id = :postId";
+        TypedQuery<Comment> query = entityManager.createQuery(hql, Comment.class);
+        query.setParameter("postId", postId);
+        return query.getResultList();
     }
 
     public Comment findById(long commentId) {
-        return super.getById(commentId);
+        return entityManager.find(Comment.class, commentId);
     }
 
     public Comment save(Comment comment) {
-        return super.save(comment);
+        entityManager.persist(comment);
+        return comment;
     }
 
     public Comment update(Comment comment) {
-        return super.update(comment);
+        return entityManager.merge(comment);
     }
 
-    public void delete(long commentId) {
-        super.delete(commentId);
+    public void delete(Comment comment) {
+        entityManager.remove(comment);
     }
 }

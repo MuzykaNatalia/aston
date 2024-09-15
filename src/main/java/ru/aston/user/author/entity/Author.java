@@ -1,11 +1,13 @@
 package ru.aston.user.author.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
 import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,9 +17,12 @@ import ru.aston.user.parent.entity.User;
 
 @Entity
 @Table(name = "author")
-@NoArgsConstructor
+@ToString
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Author extends User {
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     @ToString.Exclude

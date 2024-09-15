@@ -1,6 +1,9 @@
 package ru.aston.comment.service;
 
 import java.util.Collection;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.aston.comment.dto.RequestCommentDto;
 import ru.aston.comment.dto.ResponseCommentDto;
 import ru.aston.comment.mapper.CommentMapper;
@@ -11,20 +14,15 @@ import ru.aston.post.repository.PostRepository;
 import ru.aston.user.author.entity.Author;
 import ru.aston.user.author.repository.AuthorRepository;
 
+@Service
+@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final AuthorRepository authorRepository;
-    private final CommentMapper commentMapper = new CommentMapper();
+    private final CommentMapper commentMapper;
 
-    public CommentServiceImpl(CommentRepository commentRepository,
-                              PostRepository postRepository,
-                              AuthorRepository authorRepository) {
-        this.commentRepository = commentRepository;
-        this.postRepository = postRepository;
-        this.authorRepository = authorRepository;
-    }
-
+    @Transactional(readOnly = true)
     @Override
     public Collection<ResponseCommentDto> getAllCommentsForPost(long postId, long authorId) {
         Post post = postRepository.getPostById(postId);
@@ -45,6 +43,7 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toResponseCommentDtoCollection(comments);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ResponseCommentDto getCommentById(long commentId, long userId) {
         Author author = authorRepository.getAuthorById(userId);
@@ -60,6 +59,7 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toResponseCommentDto(comment);
     }
 
+    @Transactional
     @Override
     public ResponseCommentDto createComment(RequestCommentDto commentDto, long postId, long ownerCommentId) {
         validate(commentDto);
@@ -79,6 +79,7 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toResponseCommentDto(comment);
     }
 
+    @Transactional
     @Override
     public ResponseCommentDto updateComment(RequestCommentDto commentDto, long commentId, long ownerCommentId) {
         validate(commentDto);
@@ -97,6 +98,7 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.toResponseCommentDto(existingComment);
     }
 
+    @Transactional
     @Override
     public void deleteComment(long commentId, long ownerCommentId) {
         Comment existingComment = commentRepository.findById(commentId);
@@ -109,7 +111,7 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException("User is not authorized to delete this comment.");
         }
 
-        commentRepository.delete(commentId);
+        commentRepository.delete(existingComment);
     }
 
     private void validate(RequestCommentDto commentDto) {

@@ -4,7 +4,7 @@ import java.util.Collection;
 import ru.aston.user.admin.dto.AdminDto;
 
 public interface AdminService {
-    Collection<AdminDto> getAllAdmin();
+    Collection<AdminDto> getAllAdmin(int from, int size);
 
     AdminDto getAdminById(long adminId);
 

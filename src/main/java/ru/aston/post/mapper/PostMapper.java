@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.aston.post.dto.RequestPostDto;
 import ru.aston.post.dto.ResponsePostDto;
 import ru.aston.post.entity.Post;
@@ -11,8 +13,10 @@ import ru.aston.user.author.entity.Author;
 import ru.aston.user.author.mapper.AuthorMapper;
 import static ru.aston.constant.Constant.FORMATTER;
 
+@Component
+@RequiredArgsConstructor
 public class PostMapper {
-    private final AuthorMapper authorMapper = new AuthorMapper();
+    private final AuthorMapper authorMapper;
 
     public Post toPost(RequestPostDto postDto, Set<Author> users) {
         return Post.builder()

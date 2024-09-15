@@ -3,6 +3,8 @@ package ru.aston.comment.mapper;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.aston.comment.dto.RequestCommentDto;
 import ru.aston.comment.dto.ResponseCommentDto;
 import ru.aston.comment.entity.Comment;
@@ -11,8 +13,10 @@ import ru.aston.user.author.entity.Author;
 import ru.aston.user.author.mapper.AuthorMapper;
 import static ru.aston.constant.Constant.FORMATTER;
 
+@Component
+@RequiredArgsConstructor
 public class CommentMapper {
-    private final AuthorMapper authorMapper = new AuthorMapper();
+    private final AuthorMapper authorMapper;
 
     public Comment toComment(RequestCommentDto commentDto, Author author, Post post) {
         return Comment.builder()

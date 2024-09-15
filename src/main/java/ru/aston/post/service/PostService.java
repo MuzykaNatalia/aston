@@ -1,9 +1,11 @@
 package ru.aston.post.service;
 
 import java.util.Collection;
+import org.springframework.stereotype.Service;
 import ru.aston.post.dto.RequestPostDto;
 import ru.aston.post.dto.ResponsePostDto;
 
+@Service
 public interface PostService {
     Collection<ResponsePostDto> getAllPostsAuthor(long userId);
 

@@ -1,18 +1,24 @@
 package ru.aston.user.admin.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import ru.aston.user.parent.entity.User;
 
 @Entity
 @Table(name = "administrator")
-@NoArgsConstructor
+@ToString
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Admin extends User {
     @Column(name = "admin_level", nullable = false)
     private int adminLevel;

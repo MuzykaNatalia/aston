@@ -1,71 +1,80 @@
 package ru.aston.user.admin.service;
 
 import java.util.Collection;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.aston.user.admin.dto.AdminDto;
 import ru.aston.user.admin.entity.Admin;
 import ru.aston.user.admin.mapper.AdminMapper;
 import ru.aston.user.admin.repository.AdminRepository;
 
+@Service
+@RequiredArgsConstructor
+@Slf4j
 public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
-    private final AdminMapper adminMapper = new AdminMapper();
+    private final AdminMapper adminMapper;
 
-    public AdminServiceImpl(AdminRepository adminRepository) {
-        this.adminRepository = adminRepository;
-    }
-
+    @Transactional(readOnly = true)
     @Override
-    public Collection<AdminDto> getAllAdmin() {
-        return adminMapper.toCollectionAdminDto(adminRepository.getAllAdmin());
+    public Collection<AdminDto> getAllAdmin(int from, int size) {
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Order.asc("id")));
+        Collection<Admin> allAdmins = adminRepository.getAllAdmin(pageable);
+        return adminMapper.toCollectionAdminDto(allAdmins);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public AdminDto getAdminById(long adminId) {
         Admin admin = adminRepository.getAdminById(adminId);
         if (admin == null) {
-            throw new RuntimeException("Admin not found");
+            throw new RuntimeException("Admin not found ID " + adminId);
         }
 
         return adminMapper.toAdminDto(admin);
     }
 
+    @Transactional
     @Override
     public AdminDto createAdmin(AdminDto admin) {
-        validate(admin);
         Admin createdAdmin = adminRepository.createAdmin(adminMapper.toAdminForCreate(admin));
+        log.info("Admin with ID {} created", createdAdmin.getId());
         return adminMapper.toAdminDto(createdAdmin);
     }
 
+    @Transactional
     @Override
     public AdminDto updateAdmin(long adminId, AdminDto admin) {
-        validate(admin);
-        Admin updatedAdmin = adminRepository.updateAdmin(adminMapper.toAdminForUpdate(admin, adminId));
-        if (updatedAdmin == null) {
-            throw new RuntimeException("Admin not found");
+        Admin existingAdmin = adminRepository.getAdminById(adminId);
+        if (existingAdmin == null) {
+            throw new RuntimeException("Admin not found ID " + adminId);
         }
+
+        if (admin.getName() != null && !admin.getName().isBlank()) {
+            existingAdmin.setName(admin.getName());
+        }
+        if (admin.getEmail() != null) {
+            existingAdmin.setEmail(admin.getEmail());
+        }
+        if (admin.getAdminLevel() > 0) {
+            existingAdmin.setAdminLevel(admin.getAdminLevel());
+        }
+
+
+        Admin updatedAdmin = adminRepository.updateAdmin(existingAdmin);
+        log.info("Admin with ID {} updated", adminId);
         return adminMapper.toAdminDto(updatedAdmin);
     }
 
+    @Transactional
     @Override
     public void deleteAdmin(long adminId) {
         adminRepository.deleteAdmin(adminId);
-    }
-
-    private void validate(AdminDto admin) {
-        if (admin == null) {
-            throw new IllegalArgumentException("User cannot be null");
-        }
-        if (admin.getName() == null || (admin.getName() != null && admin.getName().isBlank())) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-        if (admin.getEmail() == null || (admin.getEmail() != null && admin.getEmail().isBlank())) {
-            throw new IllegalArgumentException("Email cannot be null or empty");
-        }
-        if (admin.getEmail() != null && !admin.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
-            throw new IllegalArgumentException("Email is not valid");
-        }
-        if (admin.getAdminLevel() <= 0) {
-            throw new IllegalArgumentException("Admin level cannot be null");
-        }
+        log.info("Admin with ID {} deleted", adminId);
     }
 }
