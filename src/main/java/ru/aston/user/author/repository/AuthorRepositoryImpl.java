@@ -20,7 +20,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
 
     @Override
     public Collection<Author> getAllAuthors(Pageable pageable) {
-        TypedQuery<Author> query = entityManager.createQuery("FROM Author", Author.class);
+        TypedQuery<Author> query = entityManager.createQuery("SELECT a FROM Author a", Author.class);
 
         query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         query.setMaxResults(pageable.getPageSize());

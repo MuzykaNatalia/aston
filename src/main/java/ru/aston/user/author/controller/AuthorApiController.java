@@ -28,8 +28,8 @@ import static ru.aston.constant.Constant.PAGE_SIZE_DEFAULT;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/authors")
-public class AuthorController {
+@RequestMapping("/api/authors")
+public class AuthorApiController {
     private final AuthorService authorService;
 
     @GetMapping

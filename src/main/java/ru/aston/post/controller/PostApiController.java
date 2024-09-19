@@ -24,9 +24,9 @@ import ru.aston.post.service.PostService;
 import static ru.aston.constant.Constant.HEADER_USER;
 
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
-public class PostController {
+public class PostApiController {
     private final PostService postService;
 
     @GetMapping

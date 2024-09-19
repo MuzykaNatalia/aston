@@ -15,7 +15,7 @@ public class AdminRepositoryImpl implements AdminRepository {
 
     @Override
     public Collection<Admin> getAllAdmin(Pageable pageable) {
-        TypedQuery<Admin> query = entityManager.createQuery("FROM Admin", Admin.class);
+        TypedQuery<Admin> query = entityManager.createQuery("SELECT a FROM Admin a", Admin.class);
 
         query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         query.setMaxResults(pageable.getPageSize());

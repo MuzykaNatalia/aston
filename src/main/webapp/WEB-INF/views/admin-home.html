@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOME</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Home admins</h1>
+    <!-- Кнопка для перехода на страницу добавления нового администратора -->
+    <a th:href="@{/admins/add}" class="bordered-button mb-3">Add new admin</a>
+    <!-- Кнопка для перехода на страницу редактирования администратора -->
+    <a th:href="@{/admins/edit-admin}" class="bordered-button mb-3">Edit admin</a>
+    <!-- Кнопка для перехода на страницу поиска администратора -->
+    <a th:href="@{/admins/get}" class="bordered-button mb-3">Search admin</a>
+    <!-- Кнопка для перехода на страницу списка администраторов -->
+    <a th:href="@{/admins/all}" class="bordered-button mb-3">List admins</a>
+    <!-- Кнопка для перехода на страницу удаления администратора -->
+    <a th:href="@{/admins/delete}" class="bordered-button mb-3">Delete admin</a>
+    <!-- Кнопка для перехода на страницу домой-->
+    <a th:href="@{/}" class="bordered-button mb-3">Back to home</a>
+</div>
+</body>
+</html>

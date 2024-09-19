@@ -24,9 +24,9 @@ import ru.aston.config.Update;
 import static ru.aston.constant.Constant.HEADER_USER;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/api/comments")
 @RequiredArgsConstructor
-public class CommentController {
+public class CommentApiController {
     private final CommentService commentService;
 
     @GetMapping("/post/{postId}")

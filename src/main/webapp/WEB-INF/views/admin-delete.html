@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DELETE ADMIN</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Delete admin</h1>
+    <form th:action="@{/admins/delete}" method="post">
+        <div class="form-group">
+            <label for="adminId">Enter Admin ID:</label>
+            <input type="text" id="adminId" name="adminId" class="form-control" required />
+        </div>
+        <button type="submit" class="bordered-button">Delete</button>
+        <a th:href="@{/admins}" class="bordered-button">Back</a>
+    </form>
+</div>
+</body>
+</html>
