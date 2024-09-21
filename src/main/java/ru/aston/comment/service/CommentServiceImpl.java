@@ -9,6 +9,8 @@ import ru.aston.comment.dto.ResponseCommentDto;
 import ru.aston.comment.mapper.CommentMapper;
 import ru.aston.comment.entity.Comment;
 import ru.aston.comment.repository.CommentRepository;
+import ru.aston.exception.NotFoundException;
+import ru.aston.exception.ValidationException;
 import ru.aston.post.entity.Post;
 import ru.aston.post.repository.PostRepository;
 import ru.aston.user.author.entity.Author;
@@ -25,18 +27,12 @@ public class CommentServiceImpl implements CommentService {
     @Transactional(readOnly = true)
     @Override
     public Collection<ResponseCommentDto> getAllCommentsForPost(long postId, long authorId) {
-        Post post = postRepository.getPostById(postId);
-        if (post == null) {
-            throw new IllegalArgumentException("Post with ID " + postId + " does not exist.");
-        }
+        Post post = getPostById(postId);
 
-        Author author = authorRepository.getAuthorById(authorId);
-        if (author == null) {
-            throw new IllegalArgumentException("Author with ID " + authorId + " does not exist.");
-        }
+        Author author = getAuthorById(authorId);
 
         if (!post.getUsers().contains(author)) {
-            throw new RuntimeException("Post with ID " + postId + " not found");
+            throw new NotFoundException("Post with ID " + postId + " not found");
         }
 
         Collection<Comment> comments = commentRepository.findCommentsByPostId(postId);
@@ -46,14 +42,11 @@ public class CommentServiceImpl implements CommentService {
     @Transactional(readOnly = true)
     @Override
     public ResponseCommentDto getCommentById(long commentId, long userId) {
-        Author author = authorRepository.getAuthorById(userId);
-        if (author == null) {
-            throw new IllegalArgumentException("User with ID " + userId + " does not exist.");
-        }
+        getAuthorById(userId);
 
         Comment comment = commentRepository.findById(commentId);
         if (comment == null) {
-            throw new IllegalArgumentException("Comment with ID " + commentId + " does not exist.");
+            throw new NotFoundException("Comment with ID " + commentId + " does not exist.");
         }
 
         return commentMapper.toResponseCommentDto(comment);
@@ -61,17 +54,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public ResponseCommentDto createComment(RequestCommentDto commentDto, long postId, long ownerCommentId) {
-        validate(commentDto);
-        Post post = postRepository.getPostById(postId);
-        if (post == null) {
-            throw new IllegalArgumentException("Post with ID " + postId + " does not exist.");
-        }
+    public ResponseCommentDto createComment(RequestCommentDto commentDto, long postId, long userId) {
+        Post post = getPostById(postId);
 
-        Author author = authorRepository.getAuthorById(ownerCommentId);
-        if (author == null) {
-            throw new IllegalArgumentException("Author with ID " + ownerCommentId + " does not exist.");
-        }
+        Author author = getAuthorById(userId);
 
         Comment comment = commentMapper.toComment(commentDto, author, post);
         comment = commentRepository.save(comment);
@@ -82,15 +68,13 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public ResponseCommentDto updateComment(RequestCommentDto commentDto, long commentId, long ownerCommentId) {
-        validate(commentDto);
-
         Comment existingComment = commentRepository.findById(commentId);
         if (existingComment == null) {
-            throw new IllegalArgumentException("Comment with ID " + commentId + " does not exist.");
+            throw new NotFoundException("Comment with ID " + commentId + " does not exist.");
         }
 
         if (existingComment.getAuthor().getId() != ownerCommentId) {
-            throw new IllegalArgumentException("Author is not authorized to update this comment.");
+            throw new ValidationException("Author is not authorized to update this comment.");
         }
 
         existingComment.setDescription(commentDto.getDescription());
@@ -102,21 +86,30 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void deleteComment(long commentId, long ownerCommentId) {
         Comment existingComment = commentRepository.findById(commentId);
-
         if (existingComment == null) {
-            throw new IllegalArgumentException("Comment with ID " + commentId + " does not exist.");
+            throw new NotFoundException("Comment with ID " + commentId + " does not exist.");
         }
 
         if (existingComment.getAuthor().getId() != ownerCommentId) {
-            throw new IllegalArgumentException("User is not authorized to delete this comment.");
+            throw new ValidationException("User is not authorized to delete this comment.");
         }
 
         commentRepository.delete(existingComment);
     }
 
-    private void validate(RequestCommentDto commentDto) {
-        if (commentDto == null || commentDto.getDescription() == null || commentDto.getDescription().isBlank()) {
-            throw new IllegalArgumentException("Description comment cannot be null or empty");
+    private Post getPostById(long postId) {
+        Post post = postRepository.getPostById(postId);
+        if (post == null) {
+            throw new NotFoundException("Post with ID " + postId + " does not exist.");
         }
+        return post;
+    }
+
+    private Author getAuthorById(long authorId) {
+        Author author = authorRepository.getAuthorById(authorId);
+        if (author == null) {
+            throw new NotFoundException("Author with ID " + authorId + " does not exist.");
+        }
+        return author;
     }
 }

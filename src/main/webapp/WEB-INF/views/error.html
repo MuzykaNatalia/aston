@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Error</title>
+</head>
+<body>
+<h1>Error</h1>
+
+<div class="container mt-5">
+    <table>
+        <tbody>
+        <tr>
+            <td th:text="${errorResponse.timestamp}">Timestamp</td>
+            <td th:text="${errorResponse.status.value()}">Status</td>
+            <td th:text="${errorResponse.reason}">Reason</td>
+            <td th:text="${errorResponse.message}">Message</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

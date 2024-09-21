@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.aston.exception.NotFoundException;
 import ru.aston.user.admin.dto.AdminDto;
 import ru.aston.user.admin.entity.Admin;
 import ru.aston.user.admin.mapper.AdminMapper;
@@ -33,7 +34,7 @@ public class AdminServiceImpl implements AdminService {
     public AdminDto getAdminById(long adminId) {
         Admin admin = adminRepository.getAdminById(adminId);
         if (admin == null) {
-            throw new RuntimeException("Admin not found ID " + adminId);
+            throw new NotFoundException("Admin not found ID " + adminId);
         }
 
         return adminMapper.toAdminDto(admin);
@@ -52,7 +53,7 @@ public class AdminServiceImpl implements AdminService {
     public AdminDto updateAdmin(long adminId, AdminDto admin) {
         Admin existingAdmin = adminRepository.getAdminById(adminId);
         if (existingAdmin == null) {
-            throw new RuntimeException("Admin not found ID " + adminId);
+            throw new NotFoundException("Admin not found ID " + adminId);
         }
 
         if (admin.getName() != null && !admin.getName().isBlank()) {

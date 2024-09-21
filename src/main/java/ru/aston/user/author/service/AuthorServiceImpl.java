@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.aston.exception.NotFoundException;
 import ru.aston.user.author.dto.RequestAuthorDto;
 import ru.aston.user.author.dto.ResponseAuthorDto;
 import ru.aston.user.author.entity.Author;
@@ -26,7 +27,7 @@ public class AuthorServiceImpl implements AuthorService {
     public ResponseAuthorDto getAuthorById(long authorId) {
         Author author = authorRepository.getAuthorById(authorId);
         if (author == null) {
-            throw new RuntimeException("Author not found ID " + authorId);
+            throw new NotFoundException("Author not found ID " + authorId);
         }
 
         return authorMapper.toAuthorDto(author);
@@ -54,7 +55,7 @@ public class AuthorServiceImpl implements AuthorService {
     public ResponseAuthorDto updateAuthor(long authorId, RequestAuthorDto requestAuthorDto) {
         Author author = authorRepository.getAuthorById(authorId);
         if (author == null) {
-            throw new RuntimeException("Author not found ID " + authorId);
+            throw new NotFoundException("Author not found ID " + authorId);
         }
 
         if (requestAuthorDto.getName() != null && !requestAuthorDto.getName().isBlank()) {

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.aston.exception.NotFoundException;
 import ru.aston.post.dto.RequestPostDto;
 import ru.aston.post.dto.ResponsePostDto;
 import ru.aston.post.entity.Post;
@@ -29,7 +30,7 @@ public class PostServiceImpl implements PostService {
     public Collection<ResponsePostDto> getAllPostsAuthor(long authorId) {
         Author author = authorRepository.getAuthorById(authorId);
         if (author == null) {
-            throw new RuntimeException("Author ID " + authorId + " not found");
+            throw new NotFoundException("Author ID " + authorId + " not found");
         }
 
         Collection<Post> posts = postRepository.getAllPostsAuthor(authorId);
@@ -41,7 +42,7 @@ public class PostServiceImpl implements PostService {
     public ResponsePostDto getPostById(long postId, long authorId) {
         Author author = authorRepository.getAuthorById(authorId);
         if (author == null) {
-            throw new RuntimeException("Author ID " + authorId + " not found");
+            throw new NotFoundException("Author ID " + authorId + " not found");
         }
 
         Post post = postRepository.getPostById(postId);

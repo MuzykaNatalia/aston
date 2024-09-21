@@ -30,5 +30,5 @@ public class AdminDto {
     private String email;
     @Positive(groups = Create.class)
     @ApiModelProperty(name = "Level of the admin", example = "1")
-    private int adminLevel;
+    private Integer adminLevel;
 }
