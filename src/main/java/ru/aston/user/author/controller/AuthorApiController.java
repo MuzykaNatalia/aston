@@ -4,6 +4,8 @@ import java.util.Collection;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -22,22 +24,37 @@ import ru.aston.config.Update;
 import ru.aston.user.author.dto.RequestAuthorDto;
 import ru.aston.user.author.dto.ResponseAuthorDto;
 import ru.aston.user.author.service.AuthorService;
-import static ru.aston.constant.Constant.HEADER_USER;
-import static ru.aston.constant.Constant.PAGE_FROM_DEFAULT;
-import static ru.aston.constant.Constant.PAGE_SIZE_DEFAULT;
+
+import static ru.aston.constant.Constant.*;
+import static ru.aston.constant.Constant.REASON_INTERNAL_SERVER_ERROR;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/authors")
+@Api(value = "/api/authors", tags = "Authors Controller")
 public class AuthorApiController {
     private final AuthorService authorService;
 
     @GetMapping
-    public ResponseAuthorDto getAuthorById(@RequestHeader(HEADER_USER) @Positive @NotNull Long userId) {
+    @ApiOperation(value = "Get an author by ID")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = REASON_OK),
+            @ApiResponse(code = 400, message = REASON_BAD_REQUEST),
+            @ApiResponse(code = 404, message = REASON_NOT_FOUND),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
+    })
+    public ResponseAuthorDto getAuthorById(@RequestHeader(HEADER_USER) @Positive @NotNull
+                                               @ApiParam(name = "ID of the author to retrieve", required = true)
+                                               Long userId) {
         return authorService.getAuthorById(userId);
     }
 
     @GetMapping("/all")
+    @ApiOperation(value = "Get all authors")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = REASON_OK),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
+    })
     public Collection<ResponseAuthorDto> getAllAuthors(@RequestParam(defaultValue = PAGE_FROM_DEFAULT) @Min(0) Integer from,
                                                        @RequestParam(defaultValue = PAGE_SIZE_DEFAULT) @Min(1) Integer size) {
         return authorService.getAllAuthors(from, size);
@@ -45,18 +62,47 @@ public class AuthorApiController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseAuthorDto createAuthor(@Validated(Create.class) @RequestBody @NotNull RequestAuthorDto user) {
+    @ApiOperation(value = "Create a new author")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = REASON_CREATED),
+            @ApiResponse(code = 400, message = REASON_BAD_REQUEST),
+            @ApiResponse(code = 404, message = REASON_NOT_FOUND),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
+    })
+    public ResponseAuthorDto createAuthor(@Validated(Create.class) @RequestBody @NotNull
+                                              @ApiParam(name = "Author object to be created", required = true)
+                                              RequestAuthorDto user) {
         return authorService.createAuthor(user);
     }
 
     @PatchMapping
-    public ResponseAuthorDto updateAuthor(@Validated(Update.class) @RequestBody @NotNull RequestAuthorDto user,
-                                          @RequestHeader(HEADER_USER) @Positive @NotNull Long userId) {
+    @ApiOperation(value = "Update an existing author")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = REASON_OK),
+            @ApiResponse(code = 400, message = REASON_BAD_REQUEST),
+            @ApiResponse(code = 404, message = REASON_NOT_FOUND),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
+    })
+    public ResponseAuthorDto updateAuthor(@Validated(Update.class) @RequestBody @NotNull
+                                              @ApiParam(name = "Updated author object", required = true)
+                                              RequestAuthorDto user,
+                                          @RequestHeader(HEADER_USER) @Positive @NotNull
+                                          @ApiParam(name = "ID of the author to update", required = true)
+                                          Long userId) {
         return authorService.updateAuthor(userId, user);
     }
 
     @DeleteMapping
-    public void deleteAuthor(@RequestHeader(HEADER_USER) @Positive @NotNull Long userId) {
+    @ApiOperation(value = "Delete an existing author")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = REASON_OK),
+            @ApiResponse(code = 400, message = REASON_BAD_REQUEST),
+            @ApiResponse(code = 404, message = REASON_NOT_FOUND),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
+    })
+    public void deleteAuthor(@RequestHeader(HEADER_USER) @Positive @NotNull
+                                 @ApiParam(name = "ID of the author to delete", required = true)
+                                 Long userId) {
         authorService.deleteAuthor(userId);
     }
 }

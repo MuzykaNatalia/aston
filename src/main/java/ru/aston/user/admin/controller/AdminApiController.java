@@ -1,12 +1,16 @@
 package ru.aston.user.admin.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.util.Collection;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
-import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -24,9 +28,15 @@ import ru.aston.config.Create;
 import ru.aston.config.Update;
 import ru.aston.user.admin.dto.AdminDto;
 import ru.aston.user.admin.service.AdminService;
+
 import static ru.aston.constant.Constant.HEADER_USER;
 import static ru.aston.constant.Constant.PAGE_FROM_DEFAULT;
 import static ru.aston.constant.Constant.PAGE_SIZE_DEFAULT;
+import static ru.aston.constant.Constant.REASON_BAD_REQUEST;
+import static ru.aston.constant.Constant.REASON_CREATED;
+import static ru.aston.constant.Constant.REASON_INTERNAL_SERVER_ERROR;
+import static ru.aston.constant.Constant.REASON_NOT_FOUND;
+import static ru.aston.constant.Constant.REASON_OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,8 +48,8 @@ public class AdminApiController {
     @GetMapping("/all")
     @ApiOperation(value = "Get all admins")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved list of admins"),
-            @ApiResponse(code = 500, message = "Internal server error")
+            @ApiResponse(code = 200, message = REASON_OK),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
     })
     public Collection<AdminDto> getAllAdmin(@RequestParam(defaultValue = PAGE_FROM_DEFAULT) @Min(0) Integer from,
                                             @RequestParam(defaultValue = PAGE_SIZE_DEFAULT) @Min(1) Integer size) {
@@ -49,8 +59,10 @@ public class AdminApiController {
     @GetMapping
     @ApiOperation(value = "Get an admin by ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved admin"),
-            @ApiResponse(code = 500, message = "Internal server error")
+            @ApiResponse(code = 200, message = REASON_OK),
+            @ApiResponse(code = 400, message = REASON_BAD_REQUEST),
+            @ApiResponse(code = 404, message = REASON_NOT_FOUND),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
     })
     public AdminDto getAdminById(@RequestHeader(HEADER_USER) @Positive @NotNull
                                      @ApiParam(name = "ID of the admin to retrieve", required = true)
@@ -62,8 +74,10 @@ public class AdminApiController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(value = "Create a new admin")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Admin created successfully"),
-            @ApiResponse(code = 500, message = "Internal server error")
+            @ApiResponse(code = 201, message = REASON_CREATED),
+            @ApiResponse(code = 400, message = REASON_BAD_REQUEST),
+            @ApiResponse(code = 404, message = REASON_NOT_FOUND),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
     })
     public AdminDto createAdmin(@Validated(Create.class) @RequestBody @NotNull
                                     @ApiParam(name = "Admin object to be created", required = true)
@@ -74,8 +88,10 @@ public class AdminApiController {
     @PatchMapping
     @ApiOperation(value = "Update an existing admin")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Admin updated successfully"),
-            @ApiResponse(code = 500, message = "Internal server error")
+            @ApiResponse(code = 200, message = REASON_OK),
+            @ApiResponse(code = 400, message = REASON_BAD_REQUEST),
+            @ApiResponse(code = 404, message = REASON_NOT_FOUND),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
     })
     public AdminDto updateAdmin(@RequestHeader(HEADER_USER) @Positive @NotNull
                                     @ApiParam(name = "ID of the admin to update", required = true)
@@ -87,11 +103,12 @@ public class AdminApiController {
     }
 
     @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiOperation(value = "Delete an existing admin")
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "Admin deleted successfully"),
-            @ApiResponse(code = 500, message = "Internal server error")
+            @ApiResponse(code = 200, message = REASON_OK),
+            @ApiResponse(code = 400, message = REASON_BAD_REQUEST),
+            @ApiResponse(code = 404, message = REASON_NOT_FOUND),
+            @ApiResponse(code = 500, message = REASON_INTERNAL_SERVER_ERROR)
     })
     public void deleteAdmin(@RequestHeader(HEADER_USER) @Positive @NotNull
                                 @ApiParam(name = "ID of the admin to delete", required = true)
