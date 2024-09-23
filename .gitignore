@@ -19,6 +19,9 @@ target/
 *.iml
 *.ipr
 
+### TomCat ###
+.smarttomcat
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

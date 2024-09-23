@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UPDATE ADMIN</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="container mt-5">
+  <h1>Update admin</h1>
+  <form th:action="@{/admins/update}" th:object="${admin}" method="post">
+    <table>
+      <tr>
+        <td><label for="adminId">Admin ID:</label></td>
+        <td><input type="number" id="adminId" name="adminId" th:value="${adminId}" class="form-control" required></td>
+      </tr>
+      <tr>
+        <td><label for="name">Name:</label></td>
+        <td><input type="text" id="name" th:field="*{name}" class="form-control" required></td>
+      </tr>
+      <tr>
+        <td><label for="email">Email:</label></td>
+        <td><input type="email" id="email" th:field="*{email}" class="form-control" required></td>
+      </tr>
+      <tr>
+        <td><label for="adminLevel">Admin Level:</label></td>
+        <td><input type="number" id="adminLevel" th:field="*{adminLevel}" class="form-control" required></td>
+      </tr>
+    </table>
+    <button type="submit" class="bordered-button mb-3">Update</button>
+    <a th:href="@{/admins}" class="bordered-button mb-3">Back</a>
+  </form>
+</div>
+</body>
+</html>

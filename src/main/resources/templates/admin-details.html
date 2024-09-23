@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN DETAILS</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Admin details</h1>
+    <table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Admin Level</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="admin : ${admin}">
+            <td th:text="${admin.name}"></td>
+            <td th:text="${admin.email}"></td>
+            <td th:text="${admin.adminLevel}"></td>
+        </tr>
+    </tbody>
+    </table>
+    <a th:href="@{/admins}" class="bordered-button mb-3">Back</a>
+</div>
+</body>
+</html>

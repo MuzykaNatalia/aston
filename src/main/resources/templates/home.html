@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Welcome to home!</h1>
+</body>
+<div class="container mt-5">
+    <!-- Кнопка для перехода на страницу администратора -->
+    <a th:href="@{/admins}" class="bordered-button mb-3">Admin</a>
+    <!-- Кнопка для перехода на страницу комментария -->
+    <a th:href="@{/comments}" class="bordered-button mb-3">Comment</a>
+    <!-- Кнопка для перехода на страницу постов -->
+    <a th:href="@{/posts}" class="bordered-button mb-3">Post</a>
+    <!-- Кнопка для перехода на страницу авторов -->
+    <a th:href="@{/authors}" class="bordered-button mb-3">Author</a>
+</div>
+</html>
